@@ -20,7 +20,8 @@ defmodule Flarum.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", Flarum do
-  #   pipe_through :api
-  # end
+  scope path: "/api" do
+    pipe_through :api
+    forward "/",Flarum.API
+  end
 end
