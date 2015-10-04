@@ -1,5 +1,6 @@
 # Flarum  
-An clone of Google Groups  
+Google Groups clone using Elixir + mithril + postgresql.  
+
 
 Status  
 ==============================  
