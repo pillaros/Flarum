@@ -1,7 +1,9 @@
 defmodule Flarum.API do
   use Maru.Router
-
-  get do
-    "API works!"
+  plug Plug.Logger, log: :debug
+  mount Routers.Welcome
+  rescue_from :all do
+    status 500
+    "Internal server error"
   end
 end
