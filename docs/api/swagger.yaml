@@ -1,0 +1,1026 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Flarum REST API
+host: api.flarumhost.com
+basePath: /v1
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  oauth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: ''
+    scopes:
+      basic: |
+        to read any and all data related to flarum
+security:
+  - oauth:
+      - basic
+paths:
+ 
+  /account/settings:
+    get:
+      summary: returns settings for user
+      description: returns settings for user
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Settings'
+    post:
+      summary: "updates user's settings"
+      description: "updates user's settings"
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: trend_location_woeid
+          in: query
+          description: 'the Yahoo! Where On Earth ID to user as defaul tend location'
+          type: string
+        - name: sleep_time_enabled
+          in: query
+          description: 'enables/disables sleep time, silencing notifications'
+          type: string
+        - name: start_sleep_time
+          in: query
+          description: the hour that sleep time should begin if enabled
+          type: string
+        - name: end_sleep_time
+          in: query
+          description: the hour that sleep time should end if enabled
+          type: string
+        - name: time_zone
+          in: query
+          description: timezone dates and times should be displayed in
+          type: string
+        - name: lang
+          in: query
+          description: language which Twitter should render in for the user
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Settings'
+  /account/update_delivery_device:
+    post:
+      summary: sets which device flarum delivers updates to for user
+      description: sets which device flarum delivers updates to for user
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: device
+          in: query
+          description: 'must be one of sms, none'
+          type: string
+          required: true
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Settings'
+  /account/update_profile:
+    post:
+      summary: sets values that users ar eable to set under Account tab
+      description: sets values that users ar eable to set under Account tab
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: name
+          in: query
+          description: full name of profile
+          type: string
+        - name: url
+          in: query
+          description: url associated with profile
+          type: string
+        - name: location
+          in: query
+          description: city or country describing where user of account is.
+          type: string
+        - name: description
+          in: query
+          description: a description of user owning account
+          type: string
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+        - name: skip_status
+          in: query
+          description: whether or not to include statuses in response
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Settings'
+  /account/update_profile_image:
+    post:
+      summary: "updates user's profile image"
+      description: "updates user's profile image"
+      security:
+        - oauth:
+            - basic
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: skip_status
+          in: query
+          description: whether or not to include statuses
+          type: string
+        - name: image
+          in: formData
+          description: image to be set as profile image
+          type: file
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Settings'
+  /users/lookup:
+    get:
+      summary: returns fully-hydrated user objects up to 100
+      description: returns fully-hydrated user objects up to 100
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: screen_name
+          in: query
+          description: screen name of user to lookup
+          type: string
+        - name: user_id
+          in: query
+          description: ID of user to lookup
+          type: string
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+  /users/show:
+    get:
+      summary: returns a variety of info about specified user
+      description: returns a variety of info about specified user
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: screen_name
+          in: query
+          description: screen name of user to be shown
+          type: string
+          required: true
+        - name: user_id
+          in: query
+          description: ID of user to be shown
+          type: string
+          required: true
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Users'
+  /users/search:
+    get:
+      summary: simple relevance-based user search
+      description: simple relevance-based user search
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: q
+          in: query
+          description: the search query to run against people search
+          type: string
+          required: true
+        - name: page
+          in: query
+          description: specifies the page of results to receive
+          type: string
+        - name: count
+          in: query
+          description: number of people to return per page
+          type: string
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+  /users/contributees:
+    get:
+      summary: collection of users specified user can contribute to
+      description: collection of users specified user can contribute to
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: screen_name
+          in: query
+          description: screen name of user that is contributed to
+          type: string
+          required: true
+        - name: user_id
+          in: query
+          description: ID of user to that is contributed to
+          type: string
+          required: true
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+        - name: skip_status
+          in: query
+          description: whether or not to skip statuses
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+  /users/contributors:
+    get:
+      summary: collection of users that can contribute to specified account
+      description: collection of users that can contribute to specified account
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: screen_name
+          in: query
+          description: screen name of user contributing
+          type: string
+          required: true
+        - name: user_id
+          in: query
+          description: ID of user contributing
+          type: string
+          required: true
+        - name: include_entities
+          in: query
+          description: whether or not to include entities
+          type: string
+        - name: skip_status
+          in: query
+          description: whether or not to skip statuses
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+  '/geo/id/{place_id}':
+    get:
+      description: Returns all the information about a know place
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: place_id
+          in: path
+          description: A place in the world
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Places'
+  /geo/search:
+    get:
+      description: Search for places that can be attached to a statuses/updates
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: lat
+          in: query
+          description: The latitude to search around
+          required: true
+          type: string
+        - name: long
+          in: query
+          description: The longtitude to search around
+          required: true
+          type: string
+        - name: query
+          in: query
+          description: Free-form text to match against while executing a geo-based query
+          required: true
+          type: string
+        - name: ip
+          in: query
+          description: An Ip address
+          required: true
+          type: string
+        - name: accuracy
+          in: query
+          description: A hint on region in which to search
+          required: false
+          type: string
+        - name: granularity
+          in: query
+          description: This is the minimal granularity of place types to return
+          required: false
+          type: string
+        - name: contained_within
+          in: query
+          description: This is the place_id which you would like to restrict the search results to
+          required: false
+          type: string
+        - name: 'attribute:street_address'
+          in: query
+          description: This parameter searches for places which have this givven street address
+          required: false
+          type: string
+        - name: callback
+          in: query
+          description: 'If supplied, the responses will use the JSON format with a callback of the given name'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Places'
+  /geo/similar_places:
+    get:
+      description: Locates places near the given coordinates which are similar in name
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: lat
+          in: query
+          description: The latitude to search around
+          required: true
+          type: string
+        - name: long
+          in: query
+          description: The longtitude to search around
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: The name a place is known as
+          required: true
+          type: string
+        - name: contained_within
+          in: query
+          description: This is the place_id which you would like to restrict the search results to
+          required: false
+          type: string
+        - name: 'attribute:street_address'
+          in: query
+          description: This parameter searches for places which have this givven street address
+          required: false
+          type: string
+        - name: callback
+          in: query
+          description: 'If supplied, the responses will use the JSON format with a callback of the given name'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Places'
+  /geo/places:
+    get:
+      description: Create a new place object at the given latitude and logitude
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: lat
+          in: query
+          description: The latitude to search around
+          required: true
+          type: string
+        - name: long
+          in: query
+          description: The longtitude to search around
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: The name a place is known as
+          required: true
+          type: string
+        - name: token
+          in: query
+          description: The token found in the response from geo/similar_places
+          required: true
+          type: string
+        - name: contained_within
+          in: query
+          description: This is the place_id which you would like to restrict the search results to
+          required: false
+          type: string
+        - name: 'attribute:street_address'
+          in: query
+          description: This parameter searches for places which have this givven street address
+          required: false
+          type: string
+        - name: callback
+          in: query
+          description: 'If supplied, the responses will use the JSON format with a callback of the given name'
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Places'
+  /trends/place:
+    get:
+      description: Returns the top 10 trending topics for a specific WOEID
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: id
+          in: query
+          description: The yahoo where on earch id
+          required: true
+          type: string
+        - name: exclude
+          in: query
+          description: Setting this equal to hashtages will remove all hashtages from the trends list
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/TrendInfo'
+  /trends/available:
+    get:
+      description: Returns the availability
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Location'
+  /trends/closest:
+    get:
+      description: Returns the location that Twitter has trending topic information for
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: lat
+          in: query
+          description: If provided with a long parameter the available trend locations wil be stored by distance
+          required: true
+          type: string
+        - name: long
+          in: query
+          description: If provided with a lat parameters the available trend locations will be sorted by distance
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Location'
+  /users/report_spam:
+    post:
+      description: Returna users report spam
+      security:
+        - oauth:
+            - basic
+      parameters:
+        - name: screen_name
+          in: query
+          description: The ID or screen_name of the user you want to report as a spammer
+          required: false
+          type: string
+        - name: user_id
+          in: query
+          description: The ID of the user you want to report as a spammer
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Users'
+  /help/configuration:
+    get:
+      description: Returns the current configuration used by Twitter including twitter.com slugs which are not usernames
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Help_Config'
+  /help/languages:
+    get:
+      description: Returns the list of languages supported by Twitter along with the language code supported by Twitter
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Help_Language'
+  /help/privacy:
+    get:
+      description: "Returns Twitter's privacy policy"
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Help_Privacy'
+  /help/tos:
+    get:
+      description: Returns the Twitter Terms of Service
+      security:
+        - oauth:
+            - basic
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Help_Tos'
+
+definitions:
+  Tweets:
+    type: object
+    properties:
+      contributors:
+        type: array
+        items:
+          $ref: '#/definitions/Contributors'
+      coordinates:
+        $ref: '#/definitions/Coordinates'
+      created_at:
+        type: string
+      current_user_retweet:
+        $ref: '#/definitions/Tweets'
+      entities:
+        $ref: '#/definitions/Entities'
+      favorite_count:
+        type: integer
+      favorited:
+        type: boolean
+      filter_level:
+        type: string
+      id:
+        type: integer
+      id_str:
+        type: string
+      in_reply_to_screen_name:
+        type: string
+      in_reply_to_status_id:
+        type: integer
+      in_reply_to_status_id_str:
+        type: string
+      in_reply_to_user_id:
+        type: integer
+      in_reply_to_user_id_str:
+        type: string
+      lang:
+        type: string
+      place:
+        $ref: '#/definitions/Places'
+      possibly_sensitive:
+        type: boolean
+      quoted_status_id:
+        type: integer
+      quoted_status_id_str:
+        type: string
+      quoted_status:
+        $ref: '#/definitions/Tweets'
+      scopes:
+        type: object
+        additionalProperties: {}
+      retweet_count:
+        type: integer
+      retweeted:
+        type: boolean
+      retweeted_status:
+        $ref: '#/definitions/Tweets'
+      source:
+        type: string
+      text:
+        type: string
+      truncated:
+        type: string
+      user:
+        $ref: '#/definitions/Users'
+      withheld_copyright:
+        type: boolean
+      withheld_countries:
+        type: array
+        items:
+          type: string
+      withheld_scope:
+        type: string
+  Contributors:
+    type: object
+    properties:
+      id:
+        type: integer
+      id_str:
+        type: string
+      screen_name:
+        type: string
+  Coordinates:
+    type: object
+    properties:
+      coordinates:
+        type: array
+        items:
+          type: number
+      type:
+        type: string
+  Users:
+    type: object
+    properties:
+      contributors_enabled:
+        type: boolean
+      created_at:
+        type: string
+      default_profile:
+        type: boolean
+      default_profile_image:
+        type: boolean
+      description:
+        type: string
+      entities:
+        $ref: '#/definitions/Entities'
+      favorites_count:
+        type: integer
+      follow_request_sent:
+        type: boolean
+      following:
+        type: boolean
+      followers_count:
+        type: integer
+      friends_count:
+        type: integer
+      geo_enabled:
+        type: boolean
+      id:
+        type: integer
+      id_str:
+        type: string
+      is_translator:
+        type: boolean
+      lang:
+        type: string
+      listed_count:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      notifications:
+        type: boolean
+      profile_background_color:
+        type: string
+      profile_background_image_url:
+        type: string
+      profile_background_image_url_https:
+        type: string
+      profile_background_tile:
+        type: string
+      profile_banner_url:
+        type: string
+      profile_image_url:
+        type: string
+      profile_image_url_https:
+        type: string
+      profile_link_color:
+        type: string
+      profile_sidebar_border_color:
+        type: string
+      profile_sidebar_fill_color:
+        type: string
+      profile_text_color:
+        type: string
+      profile_use_background_image:
+        type: boolean
+      protected:
+        type: boolean
+      screen_name:
+        type: string
+      status:
+        $ref: '#/definitions/Tweets'
+      statuses_count:
+        type: integer
+      time_zone:
+        type: string
+      url:
+        type: string
+      utc_offset:
+        type: integer
+      verified:
+        type: boolean
+      withheld_in_countries:
+        type: string
+      withheld_scope:
+        type: string
+  Entities:
+    type: object
+    properties:
+      hashtags:
+        type: array
+        items:
+          $ref: '#/definitions/Hashtags'
+      media:
+        type: array
+        items:
+          $ref: '#/definitions/Media'
+      urls:
+        type: array
+        items:
+          $ref: '#/definitions/URL'
+      user_mentions:
+        type: array
+        items:
+          $ref: '#/definitions/User_Mention'
+  Hashtags:
+    type: object
+    properties:
+      indices:
+        type: array
+        items:
+          type: integer
+      text:
+        type: string
+  Media:
+    type: object
+    properties:
+      display_url:
+        type: string
+      expanded_url:
+        type: string
+      id:
+        type: integer
+      id_str:
+        type: string
+      indices:
+        type: array
+        items:
+          type: integer
+      media_url:
+        type: string
+      media_url_https:
+        type: string
+      sizes:
+        $ref: '#/definitions/Sizes'
+      source_status_id:
+        type: integer
+      source_status_id_str:
+        type: integer
+      type:
+        type: string
+      url:
+        type: string
+  Size:
+    type: object
+    properties:
+      h:
+        type: integer
+      resize:
+        type: string
+      w:
+        type: integer
+  Sizes:
+    type: object
+    properties:
+      thumb:
+        $ref: '#/definitions/Size'
+      large:
+        $ref: '#/definitions/Size'
+      medium:
+        $ref: '#/definitions/Size'
+      small:
+        $ref: '#/definitions/Size'
+  URL:
+    type: object
+    properties:
+      display_url:
+        type: string
+      expanded_url:
+        type: string
+      indices:
+        type: string
+      url:
+        type: string
+  User_Mention:
+    type: object
+    properties:
+      id:
+        type: integer
+      id_str:
+        type: string
+      indices:
+        type: array
+        items:
+          type: integer
+      name:
+        type: string
+      screen_name:
+        type: string
+  Places:
+    type: object
+    properties:
+      attributes:
+        type: object
+      default_language: 
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      place_type:
+        type: string
+      url:
+        type: string
+  Settings:
+    type: object
+    properties:
+      sleep_time:
+        $ref: '#/definitions/Sleep'
+      use_cookie_personalization:
+        type: boolean
+      trend_location:
+        type: array
+        items:
+          $ref: '#/definitions/Location'
+      language:
+        type: string
+      discoverable_by_email:
+        type: boolean
+      always_use_https:
+        type: boolean
+      protected:
+        type: boolean
+      geo_enabled:
+        type: boolean
+      show_all_inline_media:
+        type: boolean
+      screen_name:
+        type: string
+  Sleep:
+    type: object
+    properties:
+      end_time:
+        type: string
+      enabled:
+        type: boolean
+      start_time:
+        type: string
+  Location:
+    type: object
+    properties:
+      name:
+        type: string
+      placeType:
+        $ref: '#/definitions/PlaceType'
+      woeid:
+        type: integer
+      country:
+        type: string
+      url:
+        type: string
+      countryCode:
+        type: string
+      parentid:
+        type: integer
+  PlaceType:
+    type: object
+    properties:
+      name:
+        type: string
+      code:
+        type: integer
+  TrendInfo:
+    type: object
+    properties:
+      as_of:
+        type: string
+      created_at:
+        type: string
+      locations:
+        type: array
+        items:
+          $ref: '#/definitions/Location'
+      trends:
+        type: array
+        items:
+          $ref: '#/definitions/Trends'
+  Trends:
+    type: object
+    properties:
+      events:
+        type: string
+      name:
+        type: string
+      promoted_content:
+        type: string
+      query:
+        type: string
+      url:
+        type: string
+  Help_Config:
+    type: object
+    properties:
+      dm_text_character_limit:
+        type: integer
+      characters_reserved_per_media:
+        type: integer
+      max_media_per_upload:
+        type: integer
+      non_username_paths:
+        type: array
+        items:
+          type: string
+      photo_size_limit:
+        type: integer
+      photo_sizes:
+        $ref: '#/definitions/Sizes'
+  Help_Language:
+    type: object
+    properties:
+      code:
+        type: string
+      status:
+        type: string
+      name:
+        type: string
+  Help_Privacy:
+    type: object
+    properties:
+      privacy:
+        type: string
+  Help_Tos:
+    type: object
+    properties:
+      Tos:
+        type: string
