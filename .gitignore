@@ -3,7 +3,7 @@
 /db
 /deps
 /*.ez
-
+/old
 # Generate on crash by the VM
 erl_crash.dump
 
