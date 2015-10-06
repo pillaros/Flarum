@@ -15,13 +15,13 @@ defmodule Flarum.Router do
 
   scope "/", Flarum do
     pipe_through :browser # Use the default browser stack
+
     get "/", PageController, :index
   end
 
-  scope "/", Flarum do
-    scope "/v1", V1, as: :v1 do
-        pipe_through :api
-        resources "/users", UserController
-    end
+  # Other scopes may use custom stacks.
+  scope path: "/api" do
+    pipe_through :api
+    forward "/",Flarum.API
   end
 end
