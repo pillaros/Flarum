@@ -3,6 +3,7 @@ defmodule Routers.Welcome do
 
   resources do
     get do
+
       %{hello: "world"}
     end
   end
